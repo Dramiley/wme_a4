@@ -410,16 +410,49 @@ var obj =
       "gps_long": -95.712891
     }];
 
-    
 
+    
+    
     let width= 700
     let height= 450
     let leftMargin= 15
     let rightMargin=15
     let bottomMargin= 100
     let topMargin= 15
-    function drawChart(){
+    var text1 = document.getElementById("prop_selection1").options[document.getElementById("prop_selection1").selectedIndex].text;
+    var text2 = document.getElementById("prop_selection2").options[document.getElementById("prop_selection2").selectedIndex].text;
+   
+    function get(select, chart){
+        if (chart == 1){
+      
+
+
+        text1 = select.options[select.selectedIndex].text;
+        }else{
+        text2 = select.options[select.selectedIndex].text;
+        }
+       
+       
+       
+    }
+
+
+    function UpdateChart(chart){
+        if (chart == 1){
         
+        d3.select('#bar1').selectAll("svg").remove()
+        drawChart(1)
+    }else{
+        d3.select('#bar2').selectAll("svg").remove()
+        drawChart(2)}
+    }
+       
+
+    console.log(text1);
+    
+    function drawChart(chart){
+       
+    if (chart==1){
        let svg = d3.select('#bar1').append('svg')
 
           .attr("width", width + leftMargin + rightMargin)
@@ -429,18 +462,15 @@ var obj =
        // X scale and axis
        
        
-       
-       let xscale = d3.scaleBand()
+        let xscale1 = d3.scaleBand()
           .domain(Object.values(obj.map(d => d.name)))
           .range([0, width]);
           
-          
-          
-       let x_axis = d3.axisBottom(xscale)
+        let x_axis1 = d3.axisBottom(xscale1)
        
        svg.append("g")
       .attr("transform", `translate(${leftMargin},   ${topMargin+height})`)
-      .call(x_axis)
+      .call(x_axis1)
       .call(g => g.selectAll(".tick text")
         .attr("font-family", "sans-serif")
         .attr("font-size", 12)
@@ -451,27 +481,28 @@ var obj =
       
         
        
+        let yscale1 = d3.scaleLinear()
+        .domain([0, Math.max(...Object.values(obj.map(d => d[text1])))])
+        .range([height, 0])
+      
+        
 
-       let yscale = d3.scaleLinear()
-          .domain([0, Math.max(...Object.values(obj.map(d => d.children_per_woman)))])
-          .range([height, 0])
-
-       let y_axis = d3.axisLeft(yscale)
+       let y_axis1 = d3.axisLeft(yscale1)
        
        svg.append("g")
       .attr("transform", `translate(${leftMargin}, ${topMargin})`)
-      .call(y_axis);
+      .call(y_axis1);
         
 
-       Object.values(obj.map(d =>d.children_per_woman )).forEach( (element, index) => {
+       Object.values(obj.map(d => d[text1] )).forEach( (element, index) => {
           let g = svg.append("g")
           let barWidth = 10;
-          let x = (index * (width/ Object.values(obj.map(d => d.children_per_woman)).length) +  (width/ Object.values(obj.map(d => d.children_per_woman)).length)/2 - barWidth/2)
+          let x = (index * (width/ (Object.values(obj.map(d => d[text1])).length)) +  (width/ (Object.values(obj.map(d => d[text1])).length))/2 - barWidth/2)
 
        g.append("rect")
           .attr("x", x)
-          .attr("y", ( yscale(element)))
-          .attr("height",  height - yscale(element))
+          .attr("y", ( yscale1(element)))
+          .attr("height",  height- yscale1(element))
           .attr("width", barWidth)
           .attr("fill",  "#88aaee")
           .attr("transform", `translate(${leftMargin}, ${topMargin})`)
@@ -479,7 +510,7 @@ var obj =
 
        g.append("text")
           .attr("x", x )
-          .attr("y", (yscale(element)))
+          .attr("y", (yscale1(element)))
           .text(element)
           .attr("transform", `translate(${leftMargin}, ${topMargin})`)
           .attr("font-size", 12)
@@ -487,10 +518,76 @@ var obj =
         
           
       })
+    
+}else{
+        
+        let svg2 = d3.select('#bar2').append('svg')
+ 
+           .attr("width", width + leftMargin + rightMargin)
+           .attr("height", height + topMargin + bottomMargin)
+           .append("g")
+           .attr("transform", `translate(`+ leftMargin + `,`+  topMargin +`)`)
+        // X scale and axis
+        
+        let xscale2 = d3.scaleBand()
+        .domain(Object.values(obj.map(d => d.name)))
+        .range([0, width]);
+        
+        
+        let x_axis2 = d3.axisBottom(xscale2)
+        
+        svg2.append("g")
+       .attr("transform", `translate(${leftMargin},   ${topMargin+height})`)
+       .call(x_axis2)
+       .call(g => g.selectAll(".tick text")
+         .attr("font-family", "sans-serif")
+         .attr("font-size", 12)
+         .attr("x", 10)
+         .attr("transform", `rotate(90)`))
+         .attr("text-anchor", "start")
+         //.attr("text-align", "right");
+       
+         
+        
+ 
+        let yscale2 = d3.scaleLinear()
+           .domain([0, Math.max(...Object.values(obj.map(d => d[text2])))])
+           .range([height, 0])
+ 
+        let y_axis2 = d3.axisLeft(yscale2)
+        
+        svg2.append("g")
+       .attr("transform", `translate(${leftMargin}, ${topMargin})`)
+       .call(y_axis2);
+         
+ 
+        Object.values(obj.map(d =>d[text2] )).forEach( (element, index) => {
+           let g = svg2.append("g")
+           let barWidth = 10;
+           let x = (index * (width/ Object.values(obj.map(d => d[text2])).length) +  (width/ Object.values(obj.map(d => d[text2])).length)/2 - barWidth/2)
+ 
+        g.append("rect")
+           .attr("x", x)
+           .attr("y", ( yscale2(element)))
+           .attr("height",  height - yscale2(element))
+           .attr("width", barWidth)
+           .attr("fill",  "#88aaee")
+           .attr("transform", `translate(${leftMargin}, ${topMargin})`)
+           .attr("align", "start")
+ 
+        g.append("text")
+           .attr("x", x )
+           .attr("y", (yscale2(element)))
+           .text(element)
+           .attr("transform", `translate(${leftMargin}, ${topMargin})`)
+           .attr("font-size", 12)
+           .attr("text-anchor", "middle")
+         
+           
+       })
     }
-  
+     }
 
-   
+    drawChart(1)
 
-
-    drawChart()
+    drawChart(2)    

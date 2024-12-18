@@ -34,9 +34,28 @@
 <div class="container">
     <section id="visualize-sec" class="row">
         <div class="col">
-            <select id="prop_selection1"></select>
+            <select id="prop_selection1" onchange="get(this,1); UpdateChart(1) ">
+              <option value = "1" selected>birth_rate_per_1000</option>
+              <option value = "2">cell_phones_per_100</option>
+              <option value = "3" >children_per_woman</option>
+              <option value = "4">electricity_consumption_per_capita</option>
+              <option value = "5">gdp_per_capita</option>
+              <option value = "6">inflation_annual</option>
+              <option value = "7">life_expectancy</option>
+              <option value = "8">military_expenditure_percent_of_gdp</option>
+            </select>
+            
             <div class="vis_container" id="bar1"></div>
-            <select id="prop_selection2"></select>
+            <select id="prop_selection2" onchange="get(this,2); UpdateChart(2) ">
+              <option value = "1" selected>birth_rate_per_1000</option>
+              <option value = "2">cell_phones_per_100</option>
+              <option value = "3">children_per_woman</option>
+              <option value = "4">electricity_consumption_per_capita</option>
+              <option value = "5">gdp_per_capita</option>
+              <option value = "6">inflation_annual</option>
+              <option value = "7">life_expectancy</option>
+              <option value = "8">military_expenditure_percent_of_gdp</option>
+            </select>
             <div class="vis_container" id="bar2"></div>
         </div>
         <div class="col">

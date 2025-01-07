@@ -411,29 +411,29 @@ var obj =
     }];
 
 
-    
-    
+    var map = L.map('map').setView([51.505, -0.09], 2);
+    let mapstats = new Map()
     let width= 700
-    let height= 450
-    let leftMargin= 15
+    let height= 200
+    let leftMargin= 20
     let rightMargin=15
     let bottomMargin= 100
     let topMargin= 15
     var text1 = document.getElementById("prop_selection1").options[document.getElementById("prop_selection1").selectedIndex].text;
     var text2 = document.getElementById("prop_selection2").options[document.getElementById("prop_selection2").selectedIndex].text;
-   
+
     function get(select, chart){
         if (chart == 1){
-      
+
 
 
         text1 = select.options[select.selectedIndex].text;
         }else{
         text2 = select.options[select.selectedIndex].text;
         }
-       
-       
-       
+
+
+
     }
 
 
@@ -441,17 +441,21 @@ var obj =
         if (chart == 1){
         
         d3.select('#bar1').selectAll("svg").remove()
+        
         drawChart(1)
+        drawMap() 
+      
+        
     }else{
         d3.select('#bar2').selectAll("svg").remove()
         drawChart(2)}
     }
-       
+
 
     console.log(text1);
-    
+
     function drawChart(chart){
-       
+
     if (chart==1){
        let svg = d3.select('#bar1').append('svg')
 
@@ -460,14 +464,14 @@ var obj =
           .append("g")
           .attr("transform", `translate(`+ leftMargin + `,`+  topMargin +`)`)
        // X scale and axis
-       
-       
+
+
         let xscale1 = d3.scaleBand()
           .domain(Object.values(obj.map(d => d.name)))
           .range([0, width]);
-          
+
         let x_axis1 = d3.axisBottom(xscale1)
-       
+
        svg.append("g")
       .attr("transform", `translate(${leftMargin},   ${topMargin+height})`)
       .call(x_axis1)
@@ -477,28 +481,30 @@ var obj =
         .attr("x", 10)
         .attr("transform", `rotate(90)`))
         .attr("text-anchor", "start")
-        //.attr("text-align", "right");
-      
-        
-       
+        .attr("text-align", "middle");
+
+
+
         let yscale1 = d3.scaleLinear()
         .domain([0, Math.max(...Object.values(obj.map(d => d[text1])))])
         .range([height, 0])
-      
-        
+
+
 
        let y_axis1 = d3.axisLeft(yscale1)
-       
+
        svg.append("g")
       .attr("transform", `translate(${leftMargin}, ${topMargin})`)
       .call(y_axis1);
-        
+
 
        Object.values(obj.map(d => d[text1] )).forEach( (element, index) => {
+          mapstats.set(obj[index].name, element)
           let g = svg.append("g")
           let barWidth = 10;
           let x = (index * (width/ (Object.values(obj.map(d => d[text1])).length)) +  (width/ (Object.values(obj.map(d => d[text1])).length))/2 - barWidth/2)
 
+       
        g.append("rect")
           .attr("x", x)
           .attr("y", ( yscale1(element)))
@@ -506,36 +512,38 @@ var obj =
           .attr("width", barWidth)
           .attr("fill",  "#88aaee")
           .attr("transform", `translate(${leftMargin}, ${topMargin})`)
-          .attr("align", "start")
-
-       g.append("text")
-          .attr("x", x )
-          .attr("y", (yscale1(element)))
-          .text(element)
-          .attr("transform", `translate(${leftMargin}, ${topMargin})`)
-          .attr("font-size", 12)
-          .attr("text-anchor", "middle")
-        
+          .attr("align", "middle")
           
+          
+
+      //  g.append("text")
+      //     .attr("x", x )
+      //     .attr("y", (yscale1(element)))
+      //     .text(element)
+      //     .attr("transform", `translate(${leftMargin}, ${topMargin})`)
+      //     .attr("font-size", 12)
+      //     .attr("text-anchor", "middle")
+
+
       })
-    
+
 }else{
-        
+
         let svg2 = d3.select('#bar2').append('svg')
- 
+
            .attr("width", width + leftMargin + rightMargin)
            .attr("height", height + topMargin + bottomMargin)
            .append("g")
            .attr("transform", `translate(`+ leftMargin + `,`+  topMargin +`)`)
         // X scale and axis
-        
+
         let xscale2 = d3.scaleBand()
         .domain(Object.values(obj.map(d => d.name)))
         .range([0, width]);
-        
-        
+
+
         let x_axis2 = d3.axisBottom(xscale2)
-        
+
         svg2.append("g")
        .attr("transform", `translate(${leftMargin},   ${topMargin+height})`)
        .call(x_axis2)
@@ -546,26 +554,26 @@ var obj =
          .attr("transform", `rotate(90)`))
          .attr("text-anchor", "start")
          //.attr("text-align", "right");
-       
-         
-        
- 
+
+
+
+
         let yscale2 = d3.scaleLinear()
            .domain([0, Math.max(...Object.values(obj.map(d => d[text2])))])
            .range([height, 0])
- 
+
         let y_axis2 = d3.axisLeft(yscale2)
-        
+
         svg2.append("g")
        .attr("transform", `translate(${leftMargin}, ${topMargin})`)
        .call(y_axis2);
-         
- 
+
+
         Object.values(obj.map(d =>d[text2] )).forEach( (element, index) => {
            let g = svg2.append("g")
            let barWidth = 10;
            let x = (index * (width/ Object.values(obj.map(d => d[text2])).length) +  (width/ Object.values(obj.map(d => d[text2])).length)/2 - barWidth/2)
- 
+
         g.append("rect")
            .attr("x", x)
            .attr("y", ( yscale2(element)))
@@ -574,20 +582,114 @@ var obj =
            .attr("fill",  "#88aaee")
            .attr("transform", `translate(${leftMargin}, ${topMargin})`)
            .attr("align", "start")
- 
-        g.append("text")
-           .attr("x", x )
-           .attr("y", (yscale2(element)))
-           .text(element)
-           .attr("transform", `translate(${leftMargin}, ${topMargin})`)
-           .attr("font-size", 12)
-           .attr("text-anchor", "middle")
-         
-           
+
+        //  g.append("text")
+        //     .attr("x", x )
+        //     .attr("y", (yscale2(element)))
+        //     .text(element)
+        //     .attr("transform", `translate(${leftMargin}, ${topMargin})`)
+        //     .attr("font-size", 12)
+        //     .attr("text-anchor", "middle")
+
+
        })
+    }}
+     
+   
+    function drawMap(){
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 13,
+    }).addTo(map);
+
+
+    L.marker([51.5, -0.09]).addTo(map)
+      .bindPopup(text1 + '<br>from: United Kingdom <br>' + mapstats.get('United Kingdom'))
+      .openPopup();
+   
+    L.marker([52.31, 13,24]).addTo(map)
+
+        .bindPopup(text1 + '<br> from: Germany <br>' + mapstats.get('Germany'))
+        .openPopup();
+    L.marker([-15.2, -51.31]).addTo(map)
+        .bindPopup(text1 + '<br>from: Brasil<br>' + mapstats.get('Brasil'))
+        .openPopup();
+    L.marker([45.25, -71.8]).addTo(map)
+        .bindPopup(text1 + '<br>from: Canada<br>' + mapstats.get('Canada'))
+        .openPopup();
+    L.marker([28.35, 145.03]).addTo(map)
+        .bindPopup(text1 + '<br>from: Japan<br>' + mapstats.get('Japan'))
+        .openPopup();
+    L.marker([38.89, -77.01]).addTo(map)
+        .bindPopup(text1 + '<br>from: United States<br>' + mapstats.get('United States'))
+        .openPopup();
+    L.marker([55.58, 37.39]).addTo(map)
+        .bindPopup(text1 + '<br>from: Russia<br>' + mapstats.get('Russia'))
+        .openPopup();
+    L.marker([-33.45, -70.66]).addTo(map)
+        .bindPopup(text1 + '<br>from: Chile<br>' + mapstats.get('Chile'))
+        .openPopup();
+    L.marker([40.12, 116.58]).addTo(map)
+        .bindPopup(text1 + '<br>from: China<br>' + mapstats.get('China'))
+        .openPopup();
+    L.marker([4.28, -74.22]).addTo(map)
+        .bindPopup(text1 + '<br>from: Columbia<br>' + mapstats.get('Columbia'))
+        .openPopup();  
+    L.marker([0.22, -78.51]).addTo(map)
+        .bindPopup(text1 + '<br>from: Ecuador<br>' + mapstats.get('Ecuador'))
+        .openPopup();   
+    L.marker([30.04, 31.56]).addTo(map)
+        .bindPopup(text1 + '<br>from: Egypt<br>' + mapstats.get('Egypt'))
+        .openPopup(); 
+    L.marker([60.11, 25.02]).addTo(map)
+        .bindPopup(text1 + '<br>from: Finland<br>' + mapstats.get('Finland'))
+        .openPopup(); 
+    L.marker([48.86, 2.35]).addTo(map)
+        .bindPopup(text1 + '<br>from: France<br>' + mapstats.get('France'))
+        .openPopup();
+    L.marker([64.18, -21.69]).addTo(map)
+        .bindPopup(text1 + '<br>from: Iceland<br>' + mapstats.get('Iceland'))
+        .openPopup();
+    L.marker([33.33, 44.38]).addTo(map)
+        .bindPopup(text1 + '<br>from: Iraq<br>' + mapstats.get('Iraq'))
+        .openPopup();
+    L.marker([51.11, 71.5]).addTo(map)
+        .bindPopup(text1 + '<br>from: Kazakhstan<br>' + mapstats.get('Kazakhstan'))
+        .openPopup();
+    L.marker([19.32, -99.15]).addTo(map)
+        .bindPopup(text1 + '<br>from: Mexico<br>' + mapstats.get('Mexico'))
+        .openPopup();
+    L.marker([-41.29, 174.78]).addTo(map)
+        .bindPopup(text1  + '<br>from: New Zealand<br>' + mapstats.get('New Zealand'))
+        .openPopup();
+    L.marker([9.06, 7.49]).addTo(map)
+        .bindPopup(text1 + '<br>from: Nigeria<br>' + mapstats.get('Nigeria'))
+        .openPopup();
+    L.marker([-12.05, -76.91]).addTo(map)
+        .bindPopup(text1 + '<br>from: Peru<br>' + mapstats.get('Peru'))
+        .openPopup();
+    L.marker([23.52, 44.97]).addTo(map)
+        .bindPopup(text1 + '<br>from: Saudi Arabia<br>' + mapstats.get('Saudi Arabia'))
+        .openPopup();
+    L.marker([-25.75, 28.19]).addTo(map)
+        .bindPopup(text1 + '<br>from: South Africa<br>' + mapstats.get('South Africa'))
+        .openPopup();
+    L.marker([59.33, 18.06]).addTo(map)
+.bindPopup(text1 + "<br>from: Sweden<br>" + mapstats.get('Sweden'))
+        .openPopup();
+    L.marker([24.44, 54.53]).addTo(map)
+        .bindPopup(text1 + '<br>from: United Arab Emirates<br>' + mapstats.get('United Arab Emirates'))
+        .openPopup()
+        
+        
     }
-     }
 
     drawChart(1)
 
-    drawChart(2)    
+    drawChart(2)
+
+    drawMap()
+
+    
+    
+
+    
